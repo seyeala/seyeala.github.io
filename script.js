@@ -12,12 +12,28 @@ let running = false;
 async function loadModel() {
   statusEl.textContent = 'Loading model...';
 
-  // Fail fast if the model file cannot be reached (common 404 issue)
-  const resp = await fetch(MODEL_PATH, { method: 'HEAD' });
+  // Fetch the JSON up front so we can validate its contents and surface
+  // clearer errors than the generic "Array.prototype.every called on null".
+  const resp = await fetch(MODEL_PATH);
   if (!resp.ok) {
     throw new Error(
       `Model file not found at "${MODEL_PATH}" (HTTP ${resp.status}). ` +
       'Place your exported TF.js files inside ./tfjs_model/ and ensure the main file is named model.json.'
+    );
+  }
+
+  let manifest;
+  try {
+    manifest = await resp.json();
+  } catch (err) {
+    throw new Error(
+      `Model file at "${MODEL_PATH}" is not valid JSON. Re-export the model or fix the file contents.`
+    );
+  }
+
+  if (!manifest || !Array.isArray(manifest.weightsManifest) || manifest.weightsManifest.length === 0) {
+    throw new Error(
+      `Model file at "${MODEL_PATH}" is missing a weightsManifest array. Check that you exported the full model.json + shard files.`
     );
   }
 
