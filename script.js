@@ -4,13 +4,15 @@ const videoEl = document.getElementById('webcam');
 const startBtn = document.getElementById('start-btn');
 
 const IMAGE_SIZE = 160; // must match your model's input size
-const MODEL_PATH = 'tfjs_model/model.json';
+// Default model location. The fetch below will clearly surface the exact path
+// being requested to avoid confusion (e.g., accidentally requesting "mode.json").
+const MODEL_PATH = './tfjs_model/model.json';
 
 let model = null;
 let running = false;
 
 async function loadModel() {
-  statusEl.textContent = 'Loading model...';
+  statusEl.textContent = `Loading model from ${MODEL_PATH}...`;
 
   // Fetch the JSON up front so we can validate its contents and surface
   // clearer errors than the generic "Array.prototype.every called on null".
@@ -34,6 +36,17 @@ async function loadModel() {
   if (!manifest || !Array.isArray(manifest.weightsManifest) || manifest.weightsManifest.length === 0) {
     throw new Error(
       `Model file at "${MODEL_PATH}" is missing a weightsManifest array. Check that you exported the full model.json + shard files.`
+    );
+  }
+
+  const invalidGroup = manifest.weightsManifest.find(
+    group => !Array.isArray(group.paths) || group.paths.length === 0 || !group.paths.every(p => typeof p === 'string' && p.trim())
+  );
+
+  if (invalidGroup) {
+    throw new Error(
+      `Model file at "${MODEL_PATH}" has an invalid weightsManifest.paths entry. ` +
+      'Each weightsManifest item must include a non-empty array of shard file names. Re-export the model to regenerate model.json.'
     );
   }
 
