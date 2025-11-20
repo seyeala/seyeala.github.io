@@ -12,6 +12,15 @@ let running = false;
 async function loadModel() {
   statusEl.textContent = 'Loading model...';
 
+  // Fail fast if the model file cannot be reached (common 404 issue)
+  const resp = await fetch(MODEL_PATH, { method: 'HEAD' });
+  if (!resp.ok) {
+    throw new Error(
+      `Model file not found at "${MODEL_PATH}" (HTTP ${resp.status}). ` +
+      'Place your exported TF.js files inside ./tfjs_model/ and ensure the main file is named model.json.'
+    );
+  }
+
   model = await tf.loadLayersModel(MODEL_PATH);
 
   statusEl.textContent = 'Model loaded. Requesting camera...';
