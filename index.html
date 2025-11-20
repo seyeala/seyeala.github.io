@@ -1,112 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Browser Edge TF.js Demo</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .controls {
-      margin-bottom: 1rem;
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    label {
-      display: block;
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 0.25rem 0.5rem;
-      margin-top: 0.1rem;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 0.75rem;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-    }
-    .layout {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-    video {
-      width: 320px;
-      height: 240px;
-      background: #000;
-    }
-    .status {
-      flex: 1;
-      min-width: 200px;
-    }
-    #prediction {
-      font-size: 2rem;
-      margin-top: 0.5rem;
-    }
-    #log {
-      font-size: 0.85rem;
-      white-space: pre-line;
-      background: #f5f5f5;
-      padding: 0.5rem;
-      border-radius: 4px;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>TF.js Minimal Webcam Demo</title>
 </head>
 <body>
-  <h1>TF.js Webcam Gesture Demo</h1>
-  <p>
-    Train a model in Colab → export to TF.js → paste the model path here → watch live predictions.
-  </p>
-
-  <div class="controls">
-    <label>
-      Model URL (relative or absolute):
-      <input id="model-url" type="text" value="tfjs_model/model.json" />
-    </label>
-
-    <label>
-      Labels (comma-separated, in model output order):
-      <input id="labels" type="text" value="rock,paper,scissors" />
-    </label>
-
-    <button id="start-btn">Load model &amp; start camera</button>
+  <button id="start-btn">Load model & start camera</button>
+  <div id="status">Idle</div>
+  <br><br>
+  <video id="webcam" autoplay playsinline width="320" height="240" style="background:#000"></video>
+  <div>
+    Prediction: <span id="prediction">-</span>
   </div>
 
-  <div class="layout">
-    <video id="webcam" autoplay playsinline></video>
+  <!-- 1) Load TF.js – IMPORTANT: use 4.22.0 or latest -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <!-- If 4.22.0 is not available, this also works: -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script> -->
 
-    <div class="status">
-      <div><strong>Status:</strong></div>
-      <div id="status-text">Idle</div>
+  <script>
+    const statusEl = document.getElementById('status');
+    const predEl = document.getElementById('prediction');
+    const videoEl = document.getElementById('webcam');
+    const startBtn = document.getElementById('start-btn');
 
-      <div style="margin-top: 1rem;"><strong>Prediction:</strong></div>
-      <div id="prediction">–</div>
+    const IMAGE_SIZE = 160; // your model's input size
 
-      <div style="margin-top: 1rem;"><strong>Log:</strong></div>
-      <div id="log"></div>
-    </div>
-  </div>
+    let model = null;
+    let running = false;
 
-  <!-- Hidden canvas for grabbing video frames -->
-  <canvas id="offscreen-canvas" width="160" height="160" style="display:none;"></canvas>
+    async function loadModel() {
+      statusEl.textContent = 'Loading model...';
 
-  <!-- TF.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
-  <!-- Your logic -->
-  <script src="script.js"></script>
+      // model.json must be in the same folder as index.html
+      // If you keep the name "model (1).json", change this path accordingly.
+      model = await tf.loadLayersModel('model.json');
+
+      statusEl.textContent = 'Model loaded. Requesting camera...';
+    }
+
+    async function setupCamera() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoEl.srcObject = stream;
+      await new Promise(resolve => {
+        videoEl.onloadedmetadata = () => {
+          videoEl.play();
+          resolve();
+        };
+      });
+      statusEl.textContent = 'Camera ready. Running predictions...';
+    }
+
+    function predictLoop() {
+      if (!running || !model) return;
+
+      tf.tidy(() => {
+        // Grab frame from video
+        let img = tf.browser.fromPixels(videoEl)
+          .resizeBilinear([IMAGE_SIZE, IMAGE_SIZE]) // [H,W,3]
+          .toFloat()
+          .expandDims(0); // [1,H,W,3]
+
+        // IMPORTANT: your model already normalizes inside (x/127.5 - 1),
+        // so we do NOT divide by 255 here.
+
+        const logits = model.predict(img);
+        const probs = logits.dataSync();
+        const maxIdx = probs.indexOf(Math.max(...probs));
+
+        // For now, just show the index; you can map to labels later.
+        predEl.textContent = 'class_' + maxIdx;
+      });
+
+      requestAnimationFrame(predictLoop);
+    }
+
+    async function start() {
+      if (running) return;
+      running = true;
+
+      try {
+        await loadModel();
+        await setupCamera();
+        predictLoop();
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'Error: ' + err.message;
+        running = false;
+      }
+    }
+
+    startBtn.addEventListener('click', start);
+  </script>
 </body>
 </html>
