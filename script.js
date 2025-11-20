@@ -33,30 +33,73 @@ async function loadModel() {
   statusEl.textContent = 'Loading model...';
   log(`Loading model from: ${modelUrl}`);
 
+  let modelMetadata;
   try {
-    const loadedModel = await tf.loadLayersModel(modelUrl);
-    model = loadedModel;
-    isGraphModel = false;
-    statusEl.textContent = 'Model loaded.';
-    log('Model loaded successfully as a Layers model.');
-    return model;
-  } catch (layersErr) {
-    log('Layers model load failed, trying GraphModel...');
-    console.error(layersErr);
+    const response = await fetch(modelUrl, { cache: 'no-cache' });
 
-    try {
+    if (!response.ok) {
+      throw new Error(`Model JSON could not be fetched (HTTP ${response.status}).`);
+    }
+
+    modelMetadata = await response.json();
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    statusEl.textContent = 'Failed to load model.';
+    log(`Error retrieving model file: ${message}`);
+    return null;
+  }
+
+  const format = modelMetadata?.format?.toLowerCase?.();
+  const looksGraphModel = format?.includes('graph') || Boolean(modelMetadata?.graphdefSignature);
+  const looksLayersModel = format?.includes('layers') || Boolean(modelMetadata?.modelTopology);
+
+  try {
+    const preferGraph = looksGraphModel && !looksLayersModel;
+
+    const loadLayers = async () => {
+      const loadedModel = await tf.loadLayersModel(modelUrl);
+      model = loadedModel;
+      isGraphModel = false;
+      statusEl.textContent = 'Model loaded.';
+      log('Model loaded successfully as a Layers model.');
+      return model;
+    };
+
+    const loadGraph = async () => {
       const loadedGraphModel = await tf.loadGraphModel(modelUrl);
       model = loadedGraphModel;
       isGraphModel = true;
       statusEl.textContent = 'Model loaded.';
       log('Model loaded successfully as a GraphModel.');
       return model;
-    } catch (graphErr) {
-      console.error(graphErr);
-      statusEl.textContent = 'Failed to load model.';
-      log('Error loading model: ' + graphErr.message);
-      return null;
+    };
+
+    if (preferGraph) {
+      try {
+        return await loadGraph();
+      } catch (graphErr) {
+        log('GraphModel load failed, falling back to Layers loader...');
+        console.error(graphErr);
+        return await loadLayers();
+      }
     }
+
+    try {
+      return await loadLayers();
+    } catch (layersErr) {
+      log('Layers model load failed, trying GraphModel...');
+      console.error(layersErr);
+      return await loadGraph();
+    }
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = 'Failed to load model.';
+    const message = err instanceof Error ? err.message : String(err);
+    log('Error loading model: ' + message);
+    if (message.includes('producer')) {
+      log('Tip: This often happens when the URL does not point to a valid TF.js model.json file.');
+    }
+    return null;
   }
 }
 
