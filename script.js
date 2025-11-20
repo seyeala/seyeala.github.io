@@ -1,6 +1,7 @@
 let model = null;
 let labels = [];
 let isRunning = false;
+let isGraphModel = false;
 
 const IMAGE_SIZE = 160; // must match what you used in Colab
 const PREDICTION_INTERVAL = 200; // ms between predictions
@@ -35,14 +36,27 @@ async function loadModel() {
   try {
     const loadedModel = await tf.loadLayersModel(modelUrl);
     model = loadedModel;
+    isGraphModel = false;
     statusEl.textContent = 'Model loaded.';
-    log('Model loaded successfully.');
+    log('Model loaded successfully as a Layers model.');
     return model;
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = 'Failed to load model.';
-    log('Error loading model: ' + err.message);
-    return null;
+  } catch (layersErr) {
+    log('Layers model load failed, trying GraphModel...');
+    console.error(layersErr);
+
+    try {
+      const loadedGraphModel = await tf.loadGraphModel(modelUrl);
+      model = loadedGraphModel;
+      isGraphModel = true;
+      statusEl.textContent = 'Model loaded.';
+      log('Model loaded successfully as a GraphModel.');
+      return model;
+    } catch (graphErr) {
+      console.error(graphErr);
+      statusEl.textContent = 'Failed to load model.';
+      log('Error loading model: ' + graphErr.message);
+      return null;
+    }
   }
 }
 
@@ -86,7 +100,21 @@ async function predictLoop() {
 
   const input = preprocessFrame();
 
-  const logits = tf.tidy(() => model.predict(input));
+  const logits = tf.tidy(() => {
+    if (isGraphModel) {
+      const inputName = model.inputs?.[0]?.name;
+      const outputName = model.outputs?.[0]?.name;
+
+      if (!inputName) {
+        throw new Error('Graph model is missing input name; ensure a proper signature was exported.');
+      }
+
+      const result = model.execute({ [inputName]: input }, outputName);
+      return Array.isArray(result) ? result[0] : result;
+    }
+
+    return model.predict(input);
+  });
   const probs = await logits.data();
   const maxIdx = probs.indexOf(Math.max(...probs));
   const label = labels[maxIdx] || `class_${maxIdx}`;
