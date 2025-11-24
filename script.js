@@ -4,39 +4,22 @@ const videoEl = document.getElementById('webcam');
 const startBtn = document.getElementById('start-btn');
 
 const IMAGE_SIZE = 160; // must match your model's input size
-// Default model location. The fetch below will clearly surface the exact path
-// being requested to avoid confusion (e.g., accidentally requesting "mode.json").
-const MODEL_PATH = './tfjs_model/model.json';
+
+// Try a few common locations for the TF.js export. This helps when the page is
+// hosted from a subfolder (e.g., GitHub Pages) but the model files live one
+// directory up from the HTML page.
+const MODEL_CANDIDATES = [
+  './tfjs_model/model.json',
+  '../tfjs_model/model.json',
+  '/tfjs_model/model.json',
+];
 
 let model = null;
 let running = false;
 
-async function loadModel() {
-  statusEl.textContent = `Loading model from ${MODEL_PATH}...`;
-
-  // Fetch the JSON up front so we can validate its contents and surface
-  // clearer errors than the generic "Array.prototype.every called on null".
-  const resp = await fetch(MODEL_PATH);
-  if (!resp.ok) {
-    throw new Error(
-      `Model file not found at "${MODEL_PATH}" (HTTP ${resp.status}). ` +
-      'Place your exported TF.js files inside ./tfjs_model/ and ensure the main file is named model.json.'
-    );
-  }
-
-  let manifest;
-  try {
-    manifest = await resp.json();
-  } catch (err) {
-    throw new Error(
-      `Model file at "${MODEL_PATH}" is not valid JSON. Re-export the model or fix the file contents.`
-    );
-  }
-
+function validateManifest(manifest, url) {
   if (!manifest || !Array.isArray(manifest.weightsManifest) || manifest.weightsManifest.length === 0) {
-    throw new Error(
-      `Model file at "${MODEL_PATH}" is missing a weightsManifest array. Check that you exported the full model.json + shard files.`
-    );
+    return `Model file at "${url}" is missing a weightsManifest array. Check that you exported the full model.json + shard files.`;
   }
 
   const invalidGroup = manifest.weightsManifest.find(
@@ -44,13 +27,65 @@ async function loadModel() {
   );
 
   if (invalidGroup) {
-    throw new Error(
-      `Model file at "${MODEL_PATH}" has an invalid weightsManifest.paths entry. ` +
+    return (
+      `Model file at "${url}" has an invalid weightsManifest.paths entry. ` +
       'Each weightsManifest item must include a non-empty array of shard file names. Re-export the model to regenerate model.json.'
     );
   }
 
-  model = await tf.loadLayersModel(MODEL_PATH);
+  return null;
+}
+
+async function loadModel() {
+  const errors = [];
+  let resolvedModelPath = null;
+
+  // Fetch the JSON up front so we can validate its contents and surface
+  // clearer errors than the generic "Array.prototype.every called on null".
+  for (const candidate of MODEL_CANDIDATES) {
+    const url = new URL(candidate, window.location.href).toString();
+    statusEl.textContent = `Looking for model at ${url}...`;
+
+    let manifest;
+    let resp;
+    try {
+      resp = await fetch(url);
+    } catch (err) {
+      errors.push(`${url} -> network error (${err.message})`);
+      continue;
+    }
+
+    if (!resp.ok) {
+      errors.push(`${url} -> HTTP ${resp.status}`);
+      continue;
+    }
+
+    try {
+      manifest = await resp.json();
+    } catch (err) {
+      errors.push(`${url} -> invalid JSON`);
+      continue;
+    }
+
+    const validationError = validateManifest(manifest, url);
+    if (validationError) {
+      errors.push(`${url} -> ${validationError}`);
+      continue;
+    }
+
+    resolvedModelPath = url;
+    break;
+  }
+
+  if (!resolvedModelPath) {
+    throw new Error(
+      'Model file not found. Tried the following locations:\n' + errors.join('\n') +
+      '\nPlace your exported TF.js files inside ./tfjs_model/ (next to index.html) or adjust MODEL_CANDIDATES accordingly.'
+    );
+  }
+
+  statusEl.textContent = `Loading model from ${resolvedModelPath}...`;
+  model = await tf.loadLayersModel(resolvedModelPath);
 
   statusEl.textContent = 'Model loaded. Requesting camera...';
 }
