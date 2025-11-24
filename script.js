@@ -16,6 +16,17 @@ const MODEL_CANDIDATES = [
 
 let model = null;
 let running = false;
+let hookOverrides = null;
+
+function getActiveHooks() {
+  if (hookOverrides) return hookOverrides;
+
+  return {
+    loadModel,
+    setupCamera,
+    predictLoop,
+  };
+}
 
 function validateManifest(manifest, url) {
   if (!manifest || !Array.isArray(manifest.weightsManifest) || manifest.weightsManifest.length === 0) {
@@ -132,10 +143,12 @@ async function start() {
   if (running) return;
   running = true;
 
+  const hooks = getActiveHooks();
+
   try {
-    await loadModel();
-    await setupCamera();
-    predictLoop();
+    await hooks.loadModel();
+    await hooks.setupCamera();
+    hooks.predictLoop();
   } catch (err) {
     console.error(err);
     statusEl.textContent = `Error: ${err.message}`;
@@ -143,4 +156,31 @@ async function start() {
   }
 }
 
-startBtn.addEventListener('click', start);
+startBtn.addEventListener('click', () => start());
+
+function setTestHooks(overrides) {
+  hookOverrides = {
+    loadModel,
+    setupCamera,
+    predictLoop,
+    ...overrides,
+  };
+}
+
+function resetTestHooks() {
+  hookOverrides = null;
+  running = false;
+  model = null;
+  statusEl.textContent = 'Idle';
+  predEl.textContent = '-';
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    MODEL_CANDIDATES,
+    validateManifest,
+    start,
+    setTestHooks,
+    resetTestHooks,
+  };
+}
