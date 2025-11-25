@@ -6,7 +6,7 @@ const modelUrlInput = document.getElementById('model-url');
 
 const IMAGE_SIZE = 160; // must match your model's input size
 
-const DEFAULT_MODEL_URL = '/tfjs_model/model.json';
+const DEFAULT_MODEL_URL = 'tfjs_model/model.json';
 
 let model = null;
 let running = false;
