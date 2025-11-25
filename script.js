@@ -2,17 +2,11 @@ const statusEl = document.getElementById('status');
 const predEl = document.getElementById('prediction');
 const videoEl = document.getElementById('webcam');
 const startBtn = document.getElementById('start-btn');
+const modelUrlInput = document.getElementById('model-url');
 
 const IMAGE_SIZE = 160; // must match your model's input size
 
-// Try a few common locations for the TF.js export. This helps when the page is
-// hosted from a subfolder (e.g., GitHub Pages) but the model files live one
-// directory up from the HTML page.
-const MODEL_CANDIDATES = [
-  './tfjs_model/model.json',
-  '../tfjs_model/model.json',
-  '/tfjs_model/model.json',
-];
+const DEFAULT_MODEL_URL = '/tfjs_model/model.json';
 
 let model = null;
 let running = false;
@@ -47,52 +41,38 @@ function validateManifest(manifest, url) {
   return null;
 }
 
+function getModelUrlFromInput() {
+  const provided = modelUrlInput?.value?.trim();
+  return provided || DEFAULT_MODEL_URL;
+}
+
 async function loadModel() {
-  const errors = [];
-  let resolvedModelPath = null;
+  const modelUrl = getModelUrlFromInput();
+  const resolvedModelPath = new URL(modelUrl, window.location.href).toString();
+  let manifest;
+  let resp;
 
-  // Fetch the JSON up front so we can validate its contents and surface
-  // clearer errors than the generic "Array.prototype.every called on null".
-  for (const candidate of MODEL_CANDIDATES) {
-    const url = new URL(candidate, window.location.href).toString();
-    statusEl.textContent = `Looking for model at ${url}...`;
+  statusEl.textContent = `Loading model from ${modelUrl}...`;
 
-    let manifest;
-    let resp;
-    try {
-      resp = await fetch(url);
-    } catch (err) {
-      errors.push(`${url} -> network error (${err.message})`);
-      continue;
-    }
-
-    if (!resp.ok) {
-      errors.push(`${url} -> HTTP ${resp.status}`);
-      continue;
-    }
-
-    try {
-      manifest = await resp.json();
-    } catch (err) {
-      errors.push(`${url} -> invalid JSON`);
-      continue;
-    }
-
-    const validationError = validateManifest(manifest, url);
-    if (validationError) {
-      errors.push(`${url} -> ${validationError}`);
-      continue;
-    }
-
-    resolvedModelPath = url;
-    break;
+  try {
+    resp = await fetch(resolvedModelPath);
+  } catch (err) {
+    throw new Error(`${modelUrl} -> network error (${err.message})`);
   }
 
-  if (!resolvedModelPath) {
-    throw new Error(
-      'Model file not found. Tried the following locations:\n' + errors.join('\n') +
-      '\nPlace your exported TF.js files inside ./tfjs_model/ (next to index.html) or adjust MODEL_CANDIDATES accordingly.'
-    );
+  if (!resp.ok) {
+    throw new Error(`${modelUrl} -> HTTP ${resp.status}`);
+  }
+
+  try {
+    manifest = await resp.json();
+  } catch (err) {
+    throw new Error(`${modelUrl} -> invalid JSON`);
+  }
+
+  const validationError = validateManifest(manifest, modelUrl);
+  if (validationError) {
+    throw new Error(`${modelUrl} -> ${validationError}`);
   }
 
   statusEl.textContent = `Loading model from ${resolvedModelPath}...`;
@@ -177,7 +157,8 @@ function resetTestHooks() {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    MODEL_CANDIDATES,
+    DEFAULT_MODEL_URL,
+    getModelUrlFromInput,
     validateManifest,
     start,
     setTestHooks,
