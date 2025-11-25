@@ -5,6 +5,14 @@
   <title>TF.js Minimal Webcam Demo</title>
 </head>
 <body>
+  <label for="model-url">Model URL:</label>
+  <input
+    id="model-url"
+    type="text"
+    value="tfjs_model/model.json"
+    placeholder="Model URL, e.g. tfjs_model/model.json"
+  />
+  <br><br>
   <button id="start-btn">Load model & start camera</button>
   <div id="status">Idle</div>
   <br><br>
@@ -18,79 +26,7 @@
   <!-- If 4.22.0 is not available, this also works: -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script> -->
 
-  <script>
-    const statusEl = document.getElementById('status');
-    const predEl = document.getElementById('prediction');
-    const videoEl = document.getElementById('webcam');
-    const startBtn = document.getElementById('start-btn');
-
-    const IMAGE_SIZE = 160; // your model's input size
-
-    let model = null;
-    let running = false;
-
-    async function loadModel() {
-      statusEl.textContent = 'Loading model...';
-
-      // model.json must be in the same folder as index.html
-      // If you keep the name "model (1).json", change this path accordingly.
-      model = await tf.loadLayersModel('model.json');
-
-      statusEl.textContent = 'Model loaded. Requesting camera...';
-    }
-
-    async function setupCamera() {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      videoEl.srcObject = stream;
-      await new Promise(resolve => {
-        videoEl.onloadedmetadata = () => {
-          videoEl.play();
-          resolve();
-        };
-      });
-      statusEl.textContent = 'Camera ready. Running predictions...';
-    }
-
-    function predictLoop() {
-      if (!running || !model) return;
-
-      tf.tidy(() => {
-        // Grab frame from video
-        let img = tf.browser.fromPixels(videoEl)
-          .resizeBilinear([IMAGE_SIZE, IMAGE_SIZE]) // [H,W,3]
-          .toFloat()
-          .expandDims(0); // [1,H,W,3]
-
-        // IMPORTANT: your model already normalizes inside (x/127.5 - 1),
-        // so we do NOT divide by 255 here.
-
-        const logits = model.predict(img);
-        const probs = logits.dataSync();
-        const maxIdx = probs.indexOf(Math.max(...probs));
-
-        // For now, just show the index; you can map to labels later.
-        predEl.textContent = 'class_' + maxIdx;
-      });
-
-      requestAnimationFrame(predictLoop);
-    }
-
-    async function start() {
-      if (running) return;
-      running = true;
-
-      try {
-        await loadModel();
-        await setupCamera();
-        predictLoop();
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'Error: ' + err.message;
-        running = false;
-      }
-    }
-
-    startBtn.addEventListener('click', start);
-  </script>
+  <!-- App logic -->
+  <script src="script.js"></script>
 </body>
 </html>
