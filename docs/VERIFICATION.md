@@ -5,7 +5,7 @@
 - Shared templates rebuilt all 12 academic content pages plus a new 404 page.
 - Existing `index.html` redirect and every academic page URL retained.
 - Standard-library HTML parser checks passed: balanced tags, one main/title/H1 per page, semantic landmarks, unique IDs, image descriptions, iframe title, and active navigation.
-- All 70 original content blocks preserved after the documented spelling/grammar corrections.
+- 69 original content blocks preserved after documented spelling/grammar corrections. The owner explicitly requested replacing the remaining “To be updated” Chatbot placeholder with a front end; that one exception is checked separately.
 - All original content links preserved; malformed and empty email links repaired or removed.
 - Publication placements: 12 across five categories, including the intentional cross-listing.
 - Laboratory equipment: 11 entries across six categories.
@@ -15,6 +15,8 @@
 - Chatbot restored to the header navigation between Outreach and News. Added global Machine Learning and CV links removed; the standalone Machine Learning page is retained. Original copyright wording restored; repeated personal name removed from the footer.
 - At the owner's request, `CV.pdf` is removed from the review branch and private Site source/build files, not merely unlinked. Original-branch and historical Git copies are unaffected.
 - Site JavaScript and build script syntax checks passed. Legacy webcam script is not loaded by academic pages.
+- Contact the webmaster now opens a mail draft to `alaie@nmsu.edu` on every page. This changes a link, not email-account forwarding rules.
+- Chatbot front-end controls, safe text rendering, keyboard shortcuts, local draft behavior, future connector success/error/cancellation, and reset behavior are covered by dependency-free DOM-mock tests. No real backend, API key, or GPT connection is installed.
 - Original image assets and model shards remain in the GitHub branch through the unchanged baseline tree. The CV is explicitly excluded at the owner's request.
 
 ## Review limitations

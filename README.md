@@ -18,10 +18,12 @@ The site remains dependency-free static HTML on GitHub Pages. Existing `.html` U
 - Edit shared header/footer structure in `scripts/build-pages.mjs`.
 - Edit the visual system in `assets/css/site.css`.
 - Navigation and portrait fallback behavior live in `assets/js/site.js`.
+- The Chatbot-only skin lives in `assets/css/chatbot.css` and `assets/js/chatbot.js`; its future backend connector is documented in `docs/CHATBOT-INTEGRATION.md`.
 - Run `npm run build` after changing content or shared templates, then commit the generated pages as well as the sources.
 - Run `npm run check` (Python 3, standard library only) for structural, internal-link, and content-preservation checks.
+- Run `node scripts/check-chatbot.mjs` for dependency-free chat front-end behavior checks.
 
-`scripts/content-baseline.json` records content from commit `4a3c3b51749773d766f5f491d00625a98d1fa646`. It verifies 70 original text blocks, publication placements, member/equipment counts, and original links. It is a review guardrail, not a source of new factual claims.
+`scripts/content-baseline.json` records 70 content blocks from commit `4a3c3b51749773d766f5f491d00625a98d1fa646`. Checks preserve 69 of them, with the owner's explicitly requested replacement of the Chatbot placeholder as the sole text-block exception. They also verify publication placements, member/equipment counts, and original content links. This is a review guardrail, not a source of new factual claims.
 
 All original image paths, the legacy webcam script, and the TensorFlow model files remain in the repository. At the owner's request, `CV.pdf` is removed from the review branch and all publishable website files; it is not linked or embedded. This does not erase copies in the original branch or Git history. The legacy script is no longer loaded by academic pages. `style.css` remains as a compatibility entrypoint to the new shared CSS. Chatbot is restored to the header's More menu between Outreach and News. Machine Learning retains its standalone URL without an added global footer link. The repeated personal name is removed from the footer.
 

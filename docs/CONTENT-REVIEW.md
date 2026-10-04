@@ -15,8 +15,8 @@ The visual refresh preserves the existing factual claims. These items are intent
 | Calendar | Owner requested removal of the original personal Google calendar sources. The page now links to NMSU Student Records' academic calendar and public Crimson Connection events; no Google calendar is embedded. |
 | Opportunities | Confirm whether the existing Ph.D. opening remains active. |
 | News | Current announcements end in 2023. New announcements can be added without rewriting the historic entries. |
-| Service / Chatbot | Peer Review has no entries; Chatbot remains “To be updated” and is restored to the top navigation's More menu between Outreach and News. |
+| Service / Chatbot | Peer Review has no entries. At the owner's request, Chatbot now has a front-end skin in place of “To be updated”; the customized assistant/backend is still to be provided. It remains in More between Outreach and News. |
 
-Obvious spelling and grammar corrections are limited to prose typos. Publication names, authors, degrees, dates, grant claims, and roles are not silently reconciled. Empty, unusable email anchors were removed without inventing addresses. The academic email and webmaster email remain distinct.
+Obvious spelling and grammar corrections are limited to prose typos. Publication names, authors, degrees, dates, grant claims, and roles are not silently reconciled. Empty, unusable email anchors were removed without inventing addresses. At the owner's request, the webmaster link now uses the academic email `alaie@nmsu.edu`.
 
 The legacy TensorFlow demo source and model files are retained, disconnected from academic pages, and still preserved in the documented archival branch. No original research assets were deleted.

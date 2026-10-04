@@ -120,6 +120,14 @@ for page in pages:
         failures.append(f'{path}: original copyright wording missing')
     if 'Seyedhamidreza Alaie' in ' '.join(footer.text):
         failures.append(f'{path}: repeated personal name remains in footer')
+    footer_links = [a.get('href') for t, a in footer.elements if t == 'a']
+    if footer_links.count('mailto:alaie@nmsu.edu') != 1:
+        failures.append(f'{path}: webmaster must use the owner-approved academic email')
+    if 'mailto:alaie.unm@gmail.com' in html:
+        failures.append(f'{path}: old webmaster address remains')
+    chatbot_scripts = sum(t == 'script' and a.get('src') == 'assets/js/chatbot.js' for t, a in parser.elements)
+    if chatbot_scripts != (1 if path == 'chatbot.html' else 0):
+        failures.append(f'{path}: chatbot script must be isolated to the Chatbot page')
     for tag, attrs in parser.elements:
         if tag == 'table':
             failures.append(f'{path}: layout table remains')
@@ -149,10 +157,15 @@ for page in pages:
                 failures.append(f'{path}: missing fragment {value}')
 
 preserved = 0
+owner_replaced = 0
 for page in baseline['pages']:
     parser = parsers[page['path']]
     actual = normalize(' '.join(parser.main_text))
     for original in page['original_paragraphs'] + page['original_list_items']:
+        # Owner explicitly requested a chat frontend in place of this placeholder.
+        if page['path'] == 'chatbot.html' and plain(original).strip() == 'To be updated':
+            owner_replaced += 1
+            continue
         expected = normalize(plain(original))
         if expected and expected not in actual:
             failures.append(f"{page['path']}: original material absent: {plain(original)[:130]}")
@@ -182,11 +195,21 @@ if any(t == 'iframe' for t, a in calendar.elements):
     failures.append('Calendar: unverified embedded calendar remains')
 if 'calendar.google.com' in (ROOT / 'calendar.html').read_text():
     failures.append('Calendar: personal Google calendar source remains')
+chatbot = parsers['chatbot.html']
+for required_id in ('chat-form', 'chat-input', 'chat-submit', 'chat-thread', 'chat-feedback', 'chat-reset'):
+    if required_id not in chatbot.ids:
+        failures.append(f'Chatbot: required frontend control missing: {required_id}')
+if not any(t == 'textarea' and a.get('id') == 'chat-input' and a.get('maxlength') == '2000' for t, a in chatbot.elements):
+    failures.append('Chatbot: expected limited, labeled message composer')
+if not any(t == 'label' and a.get('for') == 'chat-input' for t, a in chatbot.elements):
+    failures.append('Chatbot: composer label missing')
+if 'Not connected' not in ' '.join(chatbot.text):
+    failures.append('Chatbot: initial backend state must be transparent')
 if not (ROOT / 'index.html').read_text().find('url=about.html') >= 0:
     failures.append('Index: original redirect changed')
 
 if failures:
     print('\n'.join(failures))
     sys.exit(1)
-print(f'PASS: {len(pages)} pages; {preserved} original content blocks; links, counts, structure, metadata, and legacy-script isolation.')
+print(f'PASS: {len(pages)} pages; {preserved} preserved original content blocks; {owner_replaced} owner-approved placeholder replacement; links, counts, structure, metadata, and script isolation.')
 print('Limits: source checks only; external link availability, layout, and interactive behavior need browser review.')

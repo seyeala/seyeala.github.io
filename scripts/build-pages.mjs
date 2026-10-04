@@ -25,7 +25,7 @@ function header(current) {
 
 function footer() {
   return `<footer class="site-footer"><div class="container">
-    <div class="footer-inner"><ul class="footer-links"><li><a href="http://www.nmsu.edu/">NMSU Website</a></li><li><a href="https://mae.nmsu.edu">ME &amp; Aero Home</a></li><li><a href="mailto:alaie.unm@gmail.com">Contact the webmaster</a></li></ul></div>
+    <div class="footer-inner"><ul class="footer-links"><li><a href="http://www.nmsu.edu/">NMSU Website</a></li><li><a href="https://mae.nmsu.edu">ME &amp; Aero Home</a></li><li><a href="mailto:alaie@nmsu.edu">Contact the webmaster</a></li></ul></div>
     <div class="footer-secondary"><p>All copyright reserved.</p></div>
   </div></footer>`;
 }
@@ -43,6 +43,7 @@ for (const page of pages) {
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/css/site.css">
   <script src="assets/js/site.js" defer></script>
+  ${page.path === 'chatbot.html' ? '<link rel="stylesheet" href="assets/css/chatbot.css">\n  <script src="assets/js/chatbot.js" defer></script>' : ''}
 </head>
 <body>
   ${header(page.path)}
