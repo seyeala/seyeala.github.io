@@ -100,8 +100,22 @@ for page in pages:
         failures.append(f'{path}: missing viewport')
     if not any(t == 'meta' and a.get('name') == 'description' and a.get('content') for t, a in parser.elements):
         failures.append(f'{path}: missing description')
-    if path != '404.html' and sum(a.get('aria-current') == 'page' for _, a in parser.elements) != 1:
+    # The original standalone Machine Learning page has no incoming menu link.
+    if path not in ('404.html', 'ml.html') and sum(a.get('aria-current') == 'page' for _, a in parser.elements) != 1:
         failures.append(f'{path}: expected one active navigation item')
+    nav = Page()
+    nav.feed(re.search(r'<nav\b.*?</nav>', html, re.S).group())
+    nav_links = [a.get('href') for t, a in nav.elements if t == 'a']
+    if nav_links.count('chatbot.html') != 1:
+        failures.append(f'{path}: original Chatbot navigation link missing or duplicated')
+    if not (nav_links.index('outreach.html') < nav_links.index('chatbot.html') < nav_links.index('News.html')):
+        failures.append(f'{path}: original Chatbot navigation order changed')
+    footer = Page()
+    footer.feed(re.search(r'<footer\b.*?</footer>', html, re.S).group())
+    if any(a.get('href') in ('ml.html', 'chatbot.html', 'CV.pdf') for t, a in footer.elements if t == 'a'):
+        failures.append(f'{path}: added secondary footer links remain')
+    if 'All copyright reserved.' not in ' '.join(footer.text):
+        failures.append(f'{path}: original copyright wording missing')
     for tag, attrs in parser.elements:
         if tag == 'table':
             failures.append(f'{path}: layout table remains')
@@ -152,9 +166,16 @@ if sum(t == 'li' for t, a in parsers['laboratory.html'].elements) - 3 != 11:
     failures.append('Laboratory: expected 11 equipment entries')
 if sum(t == 'time' for t, a in parsers['News.html'].elements) != 3:
     failures.append('News: expected three dated entries')
-calendar = next(a['src'] for t, a in parsers['calendar.html'].elements if t == 'iframe')
-if len(re.findall(r'(?:\?|&)src=', calendar)) != 6:
-    failures.append('Calendar: original six calendar sources not preserved')
+# Owner explicitly requested replacing the original personal Google sources.
+calendar = parsers['calendar.html']
+calendar_links = {a.get('href') for t, a in calendar.elements if t == 'a'}
+for url in ('https://records.nmsu.edu/academic-calendar/', 'https://crimsonconnection.nmsu.edu/events'):
+    if url not in calendar_links:
+        failures.append(f'Calendar: official source missing: {url}')
+if any(t == 'iframe' for t, a in calendar.elements):
+    failures.append('Calendar: unverified embedded calendar remains')
+if 'calendar.google.com' in (ROOT / 'calendar.html').read_text():
+    failures.append('Calendar: personal Google calendar source remains')
 if not (ROOT / 'index.html').read_text().find('url=about.html') >= 0:
     failures.append('Index: original redirect changed')
 

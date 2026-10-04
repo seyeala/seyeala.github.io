@@ -5,7 +5,7 @@ import path from 'node:path';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const pages = JSON.parse(readFileSync(path.join(root, 'content/pages.json'), 'utf8'));
 const primary = [['about.html', 'Home'], ['research.html', 'Research'], ['laboratory.html', 'Laboratory'], ['publications.html', 'Publications'], ['team.html', 'Team']];
-const secondary = [['service.html', 'Service'], ['opportunities.html', 'Opportunities'], ['calendar.html', 'Calendar'], ['outreach.html', 'Outreach'], ['News.html', 'News']];
+const secondary = [['service.html', 'Service'], ['opportunities.html', 'Opportunities'], ['calendar.html', 'Calendar'], ['outreach.html', 'Outreach'], ['chatbot.html', 'Chatbot'], ['News.html', 'News']];
 const escape = value => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const link = ([url, label], current) => `<a href="${url}"${url === current ? ' aria-current="page"' : ''}>${label}</a>`;
 
@@ -23,10 +23,10 @@ function header(current) {
   </header>`;
 }
 
-function footer(current) {
+function footer() {
   return `<footer class="site-footer"><div class="container">
     <div class="footer-inner"><div class="footer-name">Seyedhamidreza Alaie</div><ul class="footer-links"><li><a href="http://www.nmsu.edu/">NMSU Website</a></li><li><a href="https://mae.nmsu.edu">ME &amp; Aero Home</a></li><li><a href="mailto:alaie.unm@gmail.com">Contact the webmaster</a></li></ul></div>
-    <div class="footer-secondary"><p>All rights reserved.</p><div class="footer-secondary-links">${link(['ml.html', 'Machine learning'], current)}${link(['chatbot.html', 'Chatbot'], current)}<a href="CV.pdf">CV (PDF)</a></div></div>
+    <div class="footer-secondary"><p>All copyright reserved.</p></div>
   </div></footer>`;
 }
 
@@ -49,7 +49,7 @@ for (const page of pages) {
   <main id="main-content" class="container" tabindex="-1">${heading}
     ${page.body}
   </main>
-  ${footer(page.path)}
+  ${footer()}
 </body>
 </html>
 `;

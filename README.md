@@ -23,8 +23,8 @@ The site remains dependency-free static HTML on GitHub Pages. Existing `.html` U
 
 `scripts/content-baseline.json` records content from commit `4a3c3b51749773d766f5f491d00625a98d1fa646`. It verifies 70 original text blocks, publication placements, member/equipment counts, and original links. It is a review guardrail, not a source of new factual claims.
 
-All original image paths, `CV.pdf`, the legacy webcam script, and the TensorFlow model files remain in the repository. The legacy script is no longer loaded by academic pages. `style.css` remains as a compatibility entrypoint to the new shared CSS. Machine Learning, Chatbot, and CV are reachable from the footer; the unfinished Chatbot is not in primary navigation.
+All original image paths, `CV.pdf`, the legacy webcam script, and the TensorFlow model files remain in the repository. The legacy script is no longer loaded by academic pages. `style.css` remains as a compatibility entrypoint to the new shared CSS. Chatbot is restored to the header's More menu between Outreach and News. Machine Learning and CV retain their original standalone URLs without added global footer links.
 
 Two failed external Team portraits use accessible initials instead of broken-image placeholders. Other portraits retain a fallback if loading fails. Empty email anchors are removed without inventing contact addresses.
 
-See `docs/CONTENT-REVIEW.md` for factual inconsistencies that need owner confirmation. Those dates, roles, citation details, grant wording, and calendar sources were not silently changed.
+See `docs/CONTENT-REVIEW.md` for factual inconsistencies that need owner confirmation. Dates, roles, citation details, and grant wording were not silently changed. At the owner's request, the personal Google calendar embed was replaced with official NMSU academic-calendar and campus-event links.

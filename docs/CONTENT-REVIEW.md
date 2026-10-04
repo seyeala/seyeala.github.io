@@ -12,10 +12,10 @@ The visual refresh preserves the existing factual claims. These items are intent
 | Team | Confirm Hemanta's 2023/2024 dates, Nicklaus's surname, and current/former role labels. |
 | Home | Verify the existing LinkedIn URL, which contains curly quotation marks. It has been preserved, not replaced with a guessed URL. |
 | Team portraits | Provide approved local photos for Hemanta and Oscar. Initials replace failed external portraits; the other portrait URLs remain unchanged. |
-| Calendar | Confirm the six original calendar sources are intentionally included and configured for public-event viewing. This refresh does not change calendar permissions. |
+| Calendar | Owner requested removal of the original personal Google calendar sources. The page now links to NMSU Student Records' academic calendar and public Crimson Connection events; no Google calendar is embedded. |
 | Opportunities | Confirm whether the existing Ph.D. opening remains active. |
 | News | Current announcements end in 2023. New announcements can be added without rewriting the historic entries. |
-| Service / Chatbot | Peer Review has no entries; Chatbot remains “To be updated” and is linked from the footer. |
+| Service / Chatbot | Peer Review has no entries; Chatbot remains “To be updated” and is restored to the top navigation's More menu between Outreach and News. |
 
 Obvious spelling and grammar corrections are limited to prose typos. Publication names, authors, degrees, dates, grant claims, and roles are not silently reconciled. Empty, unusable email anchors were removed without inventing addresses. The academic email and webmaster email remain distinct.
 
