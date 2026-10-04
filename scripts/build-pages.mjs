@@ -13,7 +13,7 @@ function header(current) {
   return `<a class="skip-link" href="#main-content">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="about.html"><span class="brand-mark" aria-hidden="true">SA</span><span><span class="brand-name">Seyedhamidreza Alaie</span><span class="brand-affiliation">New Mexico State University</span></span></a>
+      <a class="brand" href="about.html"><span class="brand-mark" aria-hidden="true">SA</span><span class="brand-name">Seyedhamidreza Alaie</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" hidden>Menu</button>
       <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
         ${primary.map(item => link(item, current)).join('\n        ')}
