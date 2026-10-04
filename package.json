@@ -1,9 +1,11 @@
 {
-  "name": "class_excercise",
+  "name": "alaie-academic-website",
   "version": "1.0.0",
-  "description": "A bare-bones page that loads a TensorFlow.js model, starts the webcam, and streams live class index predictions.",
+  "description": "Preservation-first academic website, with static GitHub Pages output and shared page templates.",
   "main": "script.js",
   "scripts": {
+    "build": "node scripts/build-pages.mjs",
+    "check": "python scripts/check-site.py",
     "test": "node --test"
   },
   "keywords": [],

@@ -1,57 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <style type="text/css"></style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chatbot | Seyedhamidreza Alaie</title>
+  <meta name="description" content="Alaie Research Assistant chat interface, ready for a future customized assistant connection.">
+  <link rel="canonical" href="https://seyeala.github.io/chatbot.html">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+  <link rel="stylesheet" href="assets/css/chatbot.css">
+  <script src="assets/js/chatbot.js" defer></script>
 </head>
-
 <body>
-
-<div id="nav">
-    <table align="left" border="0" cellpadding="1px" style="margin-bottom: 3px; margin-left: 100px; margin-top:0px" cellspacing="0">
-        <tbody>
-            <tr>
-                <td><a href="about.html">Home</a> |</td>
-                <td><a href="research.html">Research</a> |</td>
-                <td><a href="laboratory.html">Laboratory</a> |</td>
-                <td><a href="publications.html">Publications</a> |</td>
-                <td><a href="team.html">Team</a> |</td>
-                <td><a href="service.html">Service</a> |</td>
-                <td><a href="opportunities.html">Opportunities</a> |</td>
-                <td><a href="calendar.html">Calendar</a> |</td>
-                <td><a href="outreach.html">Outreach</a> |</td>
-                <td><a href="chatbot.html">Chatbot</a> |</td>
-                <td><a href="News.html">News</a></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div id="content">
-    <table width="968" border="0" cellpadding="20px" cellspacing="20">
-        <tbody>
-            <tr valign="top">
-                <td rowspan="2" id="description" width="auto">
-                    <p><span style="font-size: 9px"></span> To be updated</p>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div id="tail">
-    <table width="395" border="0" align="center" cellpadding="1px" cellspacing="0" style="margin-bottom: 3px; margin-left: 340px; margin-top:0px">
-        <tbody>
-            <tr>
-                <td width="54"><a href="http://www.nmsu.edu/">NMSU Website</a></td>
-                <td width="127"><a href="https://mae.nmsu.edu">ME & Aero Home</a></td>
-                <td width="150"><a href="mailto:alaie.unm@gmail.com">Contact the webmaster</a></td>
-            </tr>
-        </tbody>
-    </table>
-    <blockquote>All copyright reserved.</blockquote>
-</div>
-
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="about.html"><span class="brand-mark" aria-hidden="true">SA</span><span class="brand-name">Seyedhamidreza Alaie</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" hidden>Menu</button>
+      <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
+        <a href="about.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="laboratory.html">Laboratory</a>
+        <a href="publications.html">Publications</a>
+        <a href="team.html">Team</a>
+        <details class="more-nav" data-current="true"><summary>More</summary><div class="more-links"><a href="service.html">Service</a><a href="opportunities.html">Opportunities</a><a href="calendar.html">Calendar</a><a href="outreach.html">Outreach</a><a href="chatbot.html" aria-current="page">Chatbot</a><a href="News.html">News</a></div></details>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content" class="container" tabindex="-1"><div class="page-heading"><p class="eyebrow">Alaie Research</p><h1>Chatbot</h1></div>
+    <div class="chat-layout" data-chat-app><section class="chat-workspace" aria-labelledby="chat-assistant-heading"><div class="chat-toolbar"><div class="chat-identity"><span class="chat-avatar" aria-hidden="true">A</span><div><h2 id="chat-assistant-heading">Alaie Research Assistant</h2><span class="chat-connection" id="chat-connection" data-state="disconnected">Not connected</span></div></div><button type="button" class="chat-button" id="chat-reset">New chat</button></div><div class="chat-body"><div class="chat-welcome" id="chat-welcome"><h3>What would you like to explore?</h3><p id="chat-welcome-copy">This front end is ready for the custom assistant being prepared. For now, you can preview the interface; no messages are sent and no AI replies are generated.</p><div class="chat-suggestions" aria-label="Suggested questions"><button type="button" class="chat-suggestion" data-chat-prompt="What are the main research areas?">Explore research areas</button><button type="button" class="chat-suggestion" data-chat-prompt="Where can I find the publication list?">Find publications</button><button type="button" class="chat-suggestion" data-chat-prompt="How can I contact the lab about research opportunities?">Ask about opportunities</button></div></div><div class="chat-thread" id="chat-thread" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions" tabindex="0" hidden></div></div><form class="chat-composer" id="chat-form" action="#" autocomplete="off"><label class="chat-label" for="chat-input">Your question</label><textarea class="chat-input" id="chat-input" rows="3" maxlength="2000" placeholder="Ask about research, publications, or the laboratory…" aria-describedby="chat-counter chat-feedback chat-privacy"></textarea><div class="chat-composer-controls"><span class="chat-counter" id="chat-counter">0 / 2000 · Ctrl or Cmd + Enter</span><button class="chat-button chat-submit" id="chat-submit" type="submit" disabled>Preview message</button></div><p class="chat-feedback" id="chat-feedback" role="status" aria-live="polite">Interface preview only. No messages are sent or saved by this page.</p><p class="chat-privacy" id="chat-privacy">Drafts stay in temporary page memory and clear when you reload or start a new chat.</p><noscript><p>Interactive preview requires JavaScript. No assistant backend is connected.</p></noscript></form></section><aside class="chat-side" aria-labelledby="chat-resources-heading"><h2 id="chat-resources-heading">Explore the website</h2><p>Browse the public pages directly at any time.</p><div class="chat-resource-links"><a href="research.html">Research areas</a><a href="publications.html">Publication list</a><a href="laboratory.html">The laboratory</a><a href="opportunities.html">Research opportunities</a></div><div class="chat-side-note"><h2>Prefer to email?</h2><p><a href="mailto:alaie@nmsu.edu">alaie@nmsu.edu</a></p><p>This is a personal research website, not an official university chatbot.</p></div></aside></div>
+  </main>
+  <footer class="site-footer"><div class="container">
+    <div class="footer-inner"><ul class="footer-links"><li><a href="http://www.nmsu.edu/">NMSU Website</a></li><li><a href="https://mae.nmsu.edu">ME &amp; Aero Home</a></li><li><a href="mailto:alaie@nmsu.edu">Contact the webmaster</a></li></ul></div>
+    <div class="footer-secondary"><p>All copyright reserved.</p></div>
+  </div></footer>
 </body>
-
 </html>
