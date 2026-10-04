@@ -1,0 +1,28 @@
+# Review checks
+
+## Completed
+
+- Shared templates rebuilt all 12 academic content pages plus a new 404 page.
+- Existing `index.html` redirect and every academic page URL retained.
+- Standard-library HTML parser checks passed: balanced tags, one main/title/H1 per page, semantic landmarks, unique IDs, image descriptions, iframe title, and active navigation.
+- All 70 original content blocks preserved after the documented spelling/grammar corrections.
+- All original content links preserved; malformed and empty email links repaired or removed.
+- Publication placements: 12 across five categories, including the intentional cross-listing.
+- Laboratory equipment: 11 entries across six categories.
+- Team: five members, preserved order and factual descriptions.
+- News: three original announcements, presented latest first.
+- All six original calendar source IDs retained. No calendar permissions changed.
+- Site JavaScript and build script syntax checks passed. Legacy webcam script is not loaded by academic pages.
+- Original binary assets and model shards remain in the GitHub branch through the unchanged baseline tree.
+
+## Review limitations
+
+Browser-based rendering, keyboard interaction, 200% zoom, and phone/tablet/desktop screenshots were not available in this execution environment. They have not been claimed as passed. The CSS includes responsive breakpoints, no fixed-width layout tables, and reduced-motion/print support; these still need visual review in the private Site.
+
+External publication/profile links and calendar permissions have not been independently availability-tested. The Calendar can still show access errors until its underlying sources are confirmed and configured. A direct fallback link is now available.
+
+The private Sites copy references the existing GitHub Pages URLs for the two large original images (`Lab_Layout_V02.jpg` and `DSC01028.jpg`) because their binary contents could not be retrieved through the connected reader. The production GitHub branch retains the actual original image blobs; they are not removed or replaced. All other displayed local assets are included in the review copy.
+
+## Before production release
+
+Review the private Site, especially the Home reading order, navigation menu, Team image fallbacks, publication layout, and Calendar at narrow widths. Confirm any factual changes separately. Merge the review pull request only after visual review; GitHub Pages production remains unchanged until then.

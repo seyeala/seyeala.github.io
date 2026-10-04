@@ -9,3 +9,22 @@ The site's academic homepage is `about.html`; `index.html` redirects visitors th
 The TensorFlow.js webcam demo that previously occupied the root landing page is preserved in Git history and in the archival branch `archive/pre-housekeeping-2026-09-26`.
 
 When editing the site, keep navigation links relative so they continue to work under GitHub Pages.
+
+## Preservation-first visual refresh
+
+The site remains dependency-free static HTML on GitHub Pages. Existing `.html` URLs and the `index.html` redirect are unchanged. Root HTML pages are generated and tracked, so GitHub Pages does not need a custom build service.
+
+- Edit page material in `content/pages.json`.
+- Edit shared header/footer structure in `scripts/build-pages.mjs`.
+- Edit the visual system in `assets/css/site.css`.
+- Navigation and portrait fallback behavior live in `assets/js/site.js`.
+- Run `npm run build` after changing content or shared templates, then commit the generated pages as well as the sources.
+- Run `npm run check` (Python 3, standard library only) for structural, internal-link, and content-preservation checks.
+
+`scripts/content-baseline.json` records content from commit `4a3c3b51749773d766f5f491d00625a98d1fa646`. It verifies 70 original text blocks, publication placements, member/equipment counts, and original links. It is a review guardrail, not a source of new factual claims.
+
+All original image paths, `CV.pdf`, the legacy webcam script, and the TensorFlow model files remain in the repository. The legacy script is no longer loaded by academic pages. `style.css` remains as a compatibility entrypoint to the new shared CSS. Machine Learning, Chatbot, and CV are reachable from the footer; the unfinished Chatbot is not in primary navigation.
+
+Two failed external Team portraits use accessible initials instead of broken-image placeholders. Other portraits retain a fallback if loading fails. Empty email anchors are removed without inventing contact addresses.
+
+See `docs/CONTENT-REVIEW.md` for factual inconsistencies that need owner confirmation. Those dates, roles, citation details, grant wording, and calendar sources were not silently changed.
