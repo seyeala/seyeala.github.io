@@ -80,6 +80,8 @@ pages = json.loads((ROOT / 'content/pages.json').read_text())
 baseline = json.loads((ROOT / 'scripts/content-baseline.json').read_text())
 parsers = {}
 failures = []
+if (ROOT / 'CV.pdf').exists():
+    failures.append('Privacy: CV.pdf must not be present in the website root')
 for page in pages:
     path = page['path']
     html = (ROOT / path).read_text()
@@ -116,6 +118,8 @@ for page in pages:
         failures.append(f'{path}: added secondary footer links remain')
     if 'All copyright reserved.' not in ' '.join(footer.text):
         failures.append(f'{path}: original copyright wording missing')
+    if 'Seyedhamidreza Alaie' in ' '.join(footer.text):
+        failures.append(f'{path}: repeated personal name remains in footer')
     for tag, attrs in parser.elements:
         if tag == 'table':
             failures.append(f'{path}: layout table remains')
@@ -130,6 +134,8 @@ for page in pages:
             if not value:
                 continue
             url = urlsplit(unescape(value))
+            if unquote(url.path).lower().endswith('/cv.pdf') or unquote(url.path).lower() == 'cv.pdf':
+                failures.append(f'{path}: CV link or embedded file remains')
             if url.scheme in ('http', 'https', 'data', 'tel'):
                 continue
             if url.scheme == 'mailto':

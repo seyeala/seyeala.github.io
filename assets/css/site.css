@@ -119,7 +119,6 @@ main { padding-block: 3.8rem 5rem; min-height: 56vh; }
 .calendar-links { margin-top: 1rem; font-size: .9375rem; }
 .site-footer { border-top: 1px solid var(--line); background: var(--surface); padding-block: 2.5rem; }
 .footer-inner { display: flex; align-items: start; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
-.footer-name { font-family: Georgia, serif; font-size: 1.15rem; }
 .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; font-size: .875rem; }
 .footer-links li { margin: 0; }
 .footer-secondary { border-top: 1px solid var(--line); margin-top: 1.7rem; padding-top: 1.1rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: .875rem; color: var(--muted); }
